@@ -11,7 +11,7 @@ class ReportBuilder
     # Entries for Table of Contents
     attr_reader :toc
     # Array of string with format names for the Builder.
-    # For example, Html builder returns %w{html htm} and 
+    # For example, Html builder returns %w{html htm} and
     # Text builde returns %w{text txt}
     def self.code
 #      raise "Implement this"
@@ -44,11 +44,11 @@ class ReportBuilder
         fp.write(out)
       end
     end
-    
+
     def default_options # :nodoc:
       Hash.new
     end
-    
+
     # Parse each #elements of the container
     def parse_cycle(container)
       @parse_level+=1
@@ -56,8 +56,8 @@ class ReportBuilder
         parse_element(element)
       end
       @parse_level-=1
-    end    
-    
+    end
+
     # Parse one object, using this workflow
     # * If is a block, evaluate it in the context of the builder
     # * Use method #report_building_CODE, where CODE is one of the codes defined by
@@ -66,7 +66,7 @@ class ReportBuilder
     # * Use #to_s
     def parse_element(element)
       methods=self.class.code.map {|m| ("report_building_"+m).intern}
-      
+
       if element.is_a? Proc
         element.arity < 1 ? instance_eval(&element) : element.call(self)
       elsif method=methods.find {|m| element.respond_to? m}
@@ -92,27 +92,27 @@ class ReportBuilder
     def image_filename(filename, opt=Hash.new)
       parse_element(ReportBuilder::ImageFilename.new(filename,opt))
     end
-    
+
     # Create and parse an image, detecting if is a Filename or a
     # blob
     def image(img, opt=Hash.new)
       if img.is_a? String and File.exists? img
         parse_element(ReportBuilder::ImageFilename.new(img,opt))
       else
-        parse_element(ReportBuilder::ImageBlob.new(img,opt))        
+        parse_element(ReportBuilder::ImageBlob.new(img,opt))
       end
     end
-    
+
     # Create and parse an image. Use a block to insert element inside the block
     def section(opt=Hash.new, &block)
       parse_element(ReportBuilder::Section.new(opt,&block))
     end
-    
+
     # Add a paragraph to the report
     def text(t)
       raise "Implement this"
     end
-    # Add html code. Only parsed with builder which understand html 
+    # Add html code. Only parsed with builder which understand html
     def html(t)
       raise "Implement this"
     end
@@ -145,7 +145,7 @@ class ReportBuilder
       anchor
     end
   end
-  
+
   class ElementBuilder
     def initialize(builder,element)
       @element=element
@@ -157,4 +157,3 @@ end
 require 'reportbuilder/builder/text'
 require 'reportbuilder/builder/html'
 require 'reportbuilder/builder/rtf'
-require 'reportbuilder/builder/pdf'

@@ -5,13 +5,13 @@ require 'reportbuilder/image'
 require 'reportbuilder/graph'
 
 # = Report Abstract Interface.
-# Creates text, html,pdf and rtf output, based on a common framework.
+# Creates text, html,and rtf output, based on a common framework.
 #
 # == Use
-# 
+#
 # 1) Using generic ReportBuilder#add, every object will be parsed using methods report_building_FORMAT, #report_building or #to_s
-# 
-#  require "reportbuilder"    
+#
+#  require "reportbuilder"
 #  rb=ReportBuilder.new
 #  rb.add(2) #  Int#to_s used
 #  section=ReportBuilder::Section.new(:name=>"Section 1")
@@ -26,10 +26,10 @@ require 'reportbuilder/graph'
 #  puts rb.to_text
 #  rb.name="Html output"
 #  puts rb.to_html
-# 
+#
 # 2) Using a block, you can control directly the builder
-# 
-#  require "reportbuilder"    
+#
+#  require "reportbuilder"
 #  rb=ReportBuilder.new do
 #   text("2")
 #   section(:name=>"Section 1") do
@@ -58,7 +58,7 @@ class ReportBuilder
   # Available formats
   def self.builder_for(format)
     format=format.to_s.downcase
-    Builder.inherited_classes.find {|m| m.code.include? format} 
+    Builder.inherited_classes.find {|m| m.code.include? format}
   end
   def self.has_rmagick?
     begin
@@ -69,16 +69,16 @@ class ReportBuilder
     end
   end
   # Generates and optionally save the report on one function
-  # 
+  #
   # * options= Hash of options
   #  * :filename => name of file. If not provided, returns output
   #  * :format => format of output. See Builder subclasses
-  # * &block: block executed inside builder 
+  # * &block: block executed inside builder
   def self.generate(options=Hash.new, &block)
     options[:filename]||=nil
-    options[:format]||=self.get_format_from_filename(options[:filename]) if options[:filename]    
+    options[:format]||=self.get_format_from_filename(options[:filename]) if options[:filename]
     options[:format]||="text"
-    
+
     file=options.delete(:filename)
     format=options.delete(:format)
     rb=ReportBuilder.new(options)
@@ -106,7 +106,7 @@ class ReportBuilder
   def initialize(options=Hash.new, &block)
     options[:name]||="Report "+Time.now.to_s
     @no_title=options.delete :no_title
-    @name=options.delete :name 
+    @name=options.delete :name
     @name=@name.to_s
     @options=options
     @elements=Array.new
@@ -132,11 +132,6 @@ class ReportBuilder
     gen.parse
     gen.out
   end
-  def to_pdf
-    gen = Builder::Pdf.new(self, @options)
-    gen.parse
-    gen.out
-  end
   def save(filename)
     format=(self.class).get_format_from_filename(filename)
     send("save_#{format}", filename)
@@ -155,25 +150,18 @@ class ReportBuilder
     gen.parse
     gen.save(file)
   end
-  # Save a pdf file
-  def save_pdf(file)
-    options=@options.dup
-    gen=Builder::Pdf.new(self, options)
-    gen.parse
-    gen.save(file)
-  end  
 
   # Returns a Text output
   def to_text()
     gen=Builder::Text.new(self, @options)
-    gen.parse 
+    gen.parse
     gen.out
   end
   def save_text(file)
     gen=Builder::Text.new(self, @options)
     gen.parse
-     gen.save(file)    
+     gen.save(file)
   end
-  
+
   alias_method :to_s, :to_text
 end

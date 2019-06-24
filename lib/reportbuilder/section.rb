@@ -43,11 +43,6 @@ class ReportBuilder::Section
     g.header(level, name)
     g.parse_cycle(self)
   end
-  def report_building_pdf(g)
-    level=g.parse_level
-    g.header(level, name)
-    g.parse_cycle(self)    
-  end
   def add(element)
     if element.is_a? ReportBuilder::Section
       element.parent=self

@@ -1,3 +1,7 @@
+=== 1.4.3 / 2019-06-24
+* Extract to new Gem format
+* Remove all PDF code to allow MysteryScience to use new Prawn
+
 === 1.4.2 / 2011-12-12
 * Added new_page method
 
@@ -34,7 +38,7 @@
 * Changes on documentation, replacing Generator for Builder
 
 === 1.2.0 / 2010-03-28
-*ReporBuilder::Table 
+*ReporBuilder::Table
   * Colspans works as expected on Html and Text. On Rtf the cells doesn't merge, because ruby-rtf doesn't support it.
   * Better tests for Html and Text.
 * Classes related to Generator renamed to Builder, because these correspond to Builder pattern
@@ -56,7 +60,7 @@ For example, you can create
     ReportBuilder.generate(:name=>"Report 1", :format=>:html) do
         text("A paragraph")
         preformatted("a pre statement")
-        
+
     end
 === 1.0.0 / 2009-08-12
 

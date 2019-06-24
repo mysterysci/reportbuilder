@@ -125,12 +125,7 @@ class ReportBuilder
       table_builder=ReportBuilder::Table::RtfBuilder.new(builder, self)
       table_builder.generate
     end
-    def report_building_pdf(builder)
-      require 'reportbuilder/table/pdfbuilder'
-      table_builder=ReportBuilder::Table::PdfBuilder.new(builder, self)
-      table_builder.generate
-    end
-    
+
     def total_width # :nodoc:
       if @max_cols.size>0
         @max_cols.inject(0){|a,v| a+(v+3)}+1

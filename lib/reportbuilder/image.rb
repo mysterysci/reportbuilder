@@ -15,9 +15,9 @@ class ReportBuilder
     attr_reader :filename
     attr_reader :url
     attr_reader :id
-    
+
     def initialize(options=Hash.new)
-      @id=Digest::MD5.hexdigest(Time.new.to_f.to_s)      
+      @id=Digest::MD5.hexdigest(Time.new.to_f.to_s)
       @type=nil
       if !options.has_key? :name
         @name="Image #{@@n}"
@@ -25,7 +25,7 @@ class ReportBuilder
       else
         @name=options.delete :name
       end
-      
+
       default_options={
         :alt=>@name,
         :chars => [ 'W', 'M', '$', '@', '#', '%', '^', 'x', '*', 'o', '=', '+',
@@ -40,12 +40,12 @@ class ReportBuilder
       @options.each {|k,v|
         self.send("#{k}=",v) if self.respond_to? k
       }
-    end 
+    end
     # Get image_magick version of the image
     def image_magick
       if ReportBuilder.has_rmagick?
         _image_magick if respond_to? :_image_magick
-        
+
       else
         raise "Requires RMagick"
       end
@@ -67,7 +67,7 @@ class ReportBuilder
         img.change_geometry('320x320>') do |cols, rows|
           img.resize!(cols, rows) if cols != img.columns || rows != img.rows
         end
-    
+
         # Compute the image size in ASCII "pixels" and resize the image to have
         # those dimensions. The resulting image does not have the same aspect
         # ratio as the original, but since our "pixels" are twice as tall as
@@ -75,10 +75,10 @@ class ReportBuilder
         pr = img.rows / font_rows
         pc = img.columns / font_cols
         img.resize!(pc, pr)
-    
+
         img = img.quantize(chars.size, Magick::GRAYColorspace)
         img = img.normalize
-    
+
         out=""
         # Draw the image surrounded by a border. The `view' method is slow but
         # it makes it easy to address individual pixels. In grayscale images,
@@ -107,7 +107,7 @@ class ReportBuilder
       attrs=""
       attrs+=" height='#{:height}' " if :height
       attrs+=" width='#{:width}' " if :width
-      
+
       if @type=='svg'
         builder.html("
           <div class='image'>
@@ -121,27 +121,11 @@ class ReportBuilder
       end
     end
     def create_file(directory)
-      raise "Must be implemented" 
+      raise "Must be implemented"
     end
     def report_building_html(builder)
       create_file(builder.directory)
       generate_tag_html(builder)
-    end
-    def report_building_pdf(builder)
-      require 'tmpdir'
-      dir=Dir::mktmpdir
-      create_file(dir)
-      if @type=='svg'
-        if svg_raster
-          builder.pdf.image(generate_raster_from_svg(dir))
-        else
-        # Prawn-svg is not ready for production.
-        y=builder.pdf.y
-        builder.pdf.svg File.read(@filename), :at=>[0, y-60]
-        end
-      else
-        builder.pdf.image(filename, @options)
-      end
     end
     # return filename
     def generate_raster_from_svg(dir)
@@ -149,7 +133,7 @@ class ReportBuilder
       image_magick.write(out_file)
       out_file
     end
-    
+
     def report_building_rtf(builder)
       require 'tmpdir'
       directory=Dir::mktmpdir
@@ -162,12 +146,12 @@ class ReportBuilder
       end
     end
   end
-  
+
   class ImageBlob < Image
     attr_accessor :blob
     def initialize(blob, options=Hash.new)
       super(options)
-      @blob=blob      
+      @blob=blob
       if !@type
         if blob[0,40]=~/<svg/
           @type='svg'
@@ -178,7 +162,7 @@ class ReportBuilder
     end
     def _image_magick
         that=self
-        img=Magick::Image.from_blob(@blob) { 
+        img=Magick::Image.from_blob(@blob) {
           if that.type=='svg'
             self.format='SVG'
           end
@@ -194,9 +178,9 @@ class ReportBuilder
       end
       @filename
     end
-    
+
   end
-  
+
   class ImageFilename < Image
     def initialize(filename, options=Hash.new)
       super(options)
